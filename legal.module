@@ -208,8 +208,7 @@ function theme_legal_display($variables) {
   if (!empty($form['legal']['conditions']['#markup'])) {
     // Scroll box (CSS).
     if ($form['display']['#value'] == 1) {
-      $path = base_path() . drupal_get_path('module', 'legal');
-      drupal_add_css(drupal_get_path('module', 'legal') . '/legal.css');
+      $form['legal']['#attached']['css'][] = drupal_get_path('module', 'legal') . '/legal.css';
       $form['legal']['conditions']['#prefix'] = '<div class="legal-terms">';
       $form['legal']['conditions']['#suffix'] = '</div>';
     }
