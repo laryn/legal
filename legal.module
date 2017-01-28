@@ -309,6 +309,11 @@ function legal_form_user_profile_form_alter(&$form, $form_state) {
 
   $account = $form['#user'];
 
+  // Admin is excempt from accepting T&Cs, no need to display TCs.
+  if ($account->uid == 1) {
+    return;
+  }
+
   // Get last accepted version for this account.
   $legal_account = legal_get_accept($account->uid);
 
@@ -539,7 +544,7 @@ function legal_user_update(&$edit, $account, $category) {
     $edit[$key] = NULL;
   }
 
-  if ($account->uid != $user->uid) {
+  if ($account->uid == 1 || $account->uid != $user->uid) {
     return;
   }
 
