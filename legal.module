@@ -482,8 +482,8 @@ function legal_user_login(&$edit, $account) {
     ->fetchAllAssoc('uid');
 
   $signatory = array_pop($result);
-  $token = drupal_random_key();
-  $hash = user_pass_rehash($signatory->pass, $token, $signatory->login);
+  $token = drupal_hash_base64(drupal_random_bytes(55));
+  $hash = user_pass_rehash($signatory->pass, $token, $signatory->login, $uid);
 
   user_cookie_save(array('legal_hash' => $hash, 'legal_id' => $uid));
 
@@ -704,11 +704,12 @@ function legal_login_validate($form, &$form_state) {
 
   $hash = user_pass_rehash(
     $account->pass,
-    $values['token'],
-    $account->login
+    $form_state['values']['token'],
+    $account->login,
+    $form_state['values']['uid']
   );
 
-  if ($hash !== $values['hash']) {
+  if ($hash !== $form_state['values']['hash']) {
     form_set_error('legal_accept', t('User ID cannot be identified.'));
     user_cookie_delete('legal_hash');
     user_cookie_delete('legal_id');
