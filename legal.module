@@ -813,12 +813,6 @@ function legal_save_accept($version, $revision, $language, $uid) {
   );
   db_insert('legal_accepted')
     ->fields($data)
-    'version'  => $version,
-    'revision' => $revision,
-    'language' => $language,
-    'uid'      => $uid,
-    'accepted' => time(),
-  ))
     ->execute();
   module_invoke_all('legal_accepted', $data);
 }
