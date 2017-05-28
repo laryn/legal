@@ -25,3 +25,4 @@ function legal_rules_event_info() {
     ),
   );
 }
+
