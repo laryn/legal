@@ -462,7 +462,7 @@ function legal_user_login(&$edit, $account) {
   // by creating a new one time login link and setting it as the destination
   // after the T&Cs have been accepted.
   if (arg(0) == 'user' && arg(1) == 'reset') {
-    $token = drupal_hash_base64(drupal_random_bytes(55));
+    $token = drupal_random_key();
     // This is a new, anonymous-user session.
     $_SESSION['pass_reset_' . $uid] = $token;
     $query = array('destination' => "user/$uid/edit?pass-reset-token=$token");
@@ -482,7 +482,7 @@ function legal_user_login(&$edit, $account) {
     ->fetchAllAssoc('uid');
 
   $signatory = array_pop($result);
-  $token = drupal_hash_base64(drupal_random_bytes(55));
+  $token = drupal_random_key();
   $hash = user_pass_rehash($signatory->pass, $token, $signatory->login, $uid);
 
   user_cookie_save(array('legal_hash' => $hash, 'legal_id' => $uid));
