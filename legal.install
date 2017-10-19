@@ -43,6 +43,7 @@ function legal_schema() {
       ),
       'uid'      => array('type' => 'int', 'unsigned' => FALSE, 'not null' => TRUE, 'default' => 0, 'disp-width' => 10),
       'accepted' => array('type' => 'int', 'unsigned' => FALSE, 'not null' => TRUE, 'default' => 0, 'disp-width' => 11),
+      'tc_id'      => array('type' => 'int', 'unsigned' => FALSE, 'not null' => TRUE, 'default' => 0, 'disp-width' => 10),
     ),
     'indexes'     => array('uid' => array('uid')),
     'primary key' => array('legal_id'),
@@ -70,4 +71,13 @@ function legal_update_last_removed() {
  */
 function legal_update_7100() {
   menu_rebuild();
+}
+
+/**
+ * Add tc_id to legal_accepted
+ */
+function legal_update_7101() {
+  $table = 'legal_accepted';
+  $spec = array('type' => 'int', 'unsigned' => FALSE, 'not null' => TRUE, 'default' => 0, 'disp-width' => 10);
+  db_add_field($table, 'tc_id', $spec);
 }

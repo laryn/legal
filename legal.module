@@ -524,7 +524,7 @@ function legal_user_insert(&$edit, $account, $category) {
   }
 
   if ($accepted) {
-    legal_save_accept($conditions['version'], $conditions['revision'], $conditions['language'], $account->uid);
+    legal_save_accept($conditions['version'], $conditions['revision'], $conditions['language'], $conditions['tc_id'], $account->uid);
   }
 }
 
@@ -567,7 +567,7 @@ function legal_user_update(&$edit, $account, $category) {
   }
 
   if ($accepted) {
-    legal_save_accept($conditions['version'], $conditions['revision'], $conditions['language'], $account->uid);
+    legal_save_accept($conditions['version'], $conditions['revision'], $conditions['language'], $conditions['tc_id'], $account->uid);
   }
 }
 
@@ -734,7 +734,7 @@ function legal_login_submit($form, &$form_state) {
 
   $form_state['redirect'] = $redirect;
 
-  legal_save_accept($values['version'], $values['revision'], $values['language'], $user->uid);
+  legal_save_accept($values['version'], $values['revision'], $values['language'], $values['tc_id'], $user->uid);
   watchdog('legal', '%name accepted T&C version %tc_id.', array('%name' => $user->name, '%tc_id' => $values['tc_id']));
 
   // Update the user table timestamp noting user has logged in.
@@ -800,12 +800,13 @@ function legal_get_accept($uid) {
   return $accept;
 }
 
-function legal_save_accept($version, $revision, $language, $uid) {
+function legal_save_accept($version, $revision, $language, $tc_id, $uid) {
   $accepted = time();
   $data = array(
     'version' => $version,
     'revision' => $revision,
     'language' => $language,
+    'tc_id' => $tc_id,
     'uid' => $uid,
     'accepted' => $accepted,
   );
