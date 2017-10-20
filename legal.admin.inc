@@ -21,6 +21,27 @@ function legal_configuration($form_state) {
     '#default_value' => variable_get('accept_every_login', '0'),
   );
 
+  $form['except_legal'] = array(
+    '#type'        => 'fieldset',
+    '#title'       => t('Exempt User Roles'),
+    '#description' => t('Users with the selected roles will never be shown T&C.'),
+    '#collapsible' => TRUE,
+    '#collapsed'   => TRUE,
+  );
+
+  $all_roles = array_map('check_plain', user_roles());
+  $irrelevant_roles = array('anonymous user', 'authenticated user');
+  $role_options = array_diff($all_roles, $irrelevant_roles);
+  $except_roles = variable_get('legal_except_roles', array());
+
+  $form['except_legal']['except_roles'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Exempt user roles'),
+    '#options' => $role_options,
+    '#default_value' => $except_roles,
+    '#description' => t('Do not display Terms and Conditions check box for the selected user roles.'),
+  );
+
   $form['save'] = array(
     '#type'  => 'submit',
     '#value' => t('Save'),
@@ -33,6 +54,12 @@ function legal_configuration_submit($form, &$form_state) {
   $values = $form_state['values'];
 
   variable_set('accept_every_login', $values['accept_every_login']);
+
+  // Set the excepted user roles.
+  if (!empty($values['except_roles'])) {
+    $except_roles = array_filter($values['except_roles']);
+    variable_set('legal_except_roles', $except_roles);
+  }
 }
 
 /**

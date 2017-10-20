@@ -290,6 +290,14 @@ function legal_form_user_profile_form_alter(&$form, $form_state) {
   global $user;
   global $language;
   $accepted = FALSE;
+  $account = $form['#user'];
+
+  // If this profile belongs to user 1 or if it has an exempt user role we don't
+  // display Terms & Conditions. Pass the user of the profile being viewed, not
+  // the current user.
+  if (legal_user_is_exempt($account)) {
+    return;
+  }
 
   if ($form['#user_category'] != 'account') {
     return;
@@ -305,13 +313,6 @@ function legal_form_user_profile_form_alter(&$form, $form_state) {
     if (!in_array($reminder, $status_messages)) {
       drupal_set_message($reminder);
     }
-  }
-
-  $account = $form['#user'];
-
-  // Admin is excempt from accepting T&Cs, no need to display TCs.
-  if ($account->uid == 1) {
-    return;
   }
 
   // Get last accepted version for this account.
@@ -407,7 +408,9 @@ function legal_user_login(&$edit, $account) {
   global $user;
   global $language;
 
-  if ($user->uid == 1) {
+  // If this profile belongs to user 1 or if it has an exempt user role we don't
+  // display Terms & Conditions.
+  if (legal_user_is_exempt($user)) {
     return;
   }
 
@@ -961,4 +964,29 @@ function legal_views_api() {
     'api'  => 2,
     'path' => drupal_get_path('module', 'legal') . '/views',
   );
+}
+
+/**
+ * Check if user is exempt from Terms & Conditions.
+ *
+ * @param $account
+ *   A user object
+ *
+ * @return bool
+ *   True if the passed user is exempt
+ */
+function legal_user_is_exempt($account) {
+  // User 1 is exempt from accepting T&Cs, no need to display T&Cs.
+  if ($account->uid === 1) {
+    return TRUE;
+  }
+
+  $exempt_roles = variable_get('legal_except_roles', array());
+  $account_roles = $account->roles;
+  $exempt_user_roles = array_intersect_key($account_roles, $exempt_roles);
+  if (count($exempt_user_roles)) {
+    return TRUE;
+  }
+
+  return FALSE;
 }
