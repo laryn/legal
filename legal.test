@@ -9,9 +9,17 @@
  * Legal module base test class.
  */
 class LegalTestCase extends DrupalWebTestCase {
+  protected $edit;
+
   function setUp() {
     // Enable any modules required for the test.
     parent::setUp('legal');
+
+    // Set basic module settings.
+    $this->edit = array(
+      'conditions[value]'  => $this->randomName(),
+      'conditions[format]' => 'plain_text',
+    );
   }
 
   /**
@@ -51,12 +59,7 @@ class LegalRegisterTestCase extends LegalTestCase {
   function setUp() {
     parent::setUp();
 
-    // Set basic module settings.
-    $conditions = $this->randomName();
-    $edit = array(
-      'conditions' => $conditions,
-    );
-    $this->setSettings($edit);
+    $this->setSettings($this->edit);
   }
 
   /**
@@ -113,13 +116,7 @@ class LegalPasswordResetTestCase extends LegalTestCase {
 
   function setUp() {
     parent::setUp();
-
-    // Set basic module settings.
-    $conditions = $this->randomName();
-    $edit = array(
-      'conditions' => $conditions,
-    );
-    $this->setSettings($edit);
+    $this->setSettings($this->edit);
 
     // Create an ordinary user.
     $this->user = $this->drupalCreateUser();
@@ -167,7 +164,6 @@ class LegalPasswordResetTestCase extends LegalTestCase {
  * Test Scroll Box Display.
  */
 class LegalScrollBoxDisplayTestCase extends LegalTestCase {
-  var $conditions;
 
   public static function getInfo() {
     return array(
@@ -181,12 +177,8 @@ class LegalScrollBoxDisplayTestCase extends LegalTestCase {
     parent::setUp();
 
     // Set basic module settings.
-    $this->conditions = $this->randomName();
-    $edit = array(
-      'conditions' => $this->conditions,
-      'display' => 0,
-    );
-    $this->setSettings($edit);
+    $this->edit['display'] = 0;
+    $this->setSettings($this->edit);
   }
 
   /**
@@ -196,7 +188,7 @@ class LegalScrollBoxDisplayTestCase extends LegalTestCase {
     $this->drupalGet('user/register');
 
      // Check presence of T&C text.
-    $this->assertText($this->conditions, 'T&C text displayed');
+    $this->assertText($this->edit['conditions[value]'], 'T&C text displayed');
   }
 }
 
@@ -204,7 +196,6 @@ class LegalScrollBoxDisplayTestCase extends LegalTestCase {
  * Test Scroll Box CSS Display.
  */
 class LegalScrollBoxCSSDisplayTestCase extends LegalTestCase {
-  var $conditions;
 
   public static function getInfo() {
     return array(
@@ -218,12 +209,8 @@ class LegalScrollBoxCSSDisplayTestCase extends LegalTestCase {
     parent::setUp();
 
     // Set basic module settings.
-    $this->conditions = $this->randomName();
-    $edit = array(
-      'conditions' => $this->conditions,
-      'display' => 1,
-    );
-    $this->setSettings($edit);
+    $this->edit['display'] = 1;
+    $this->setSettings($this->edit);
   }
 
   /**
@@ -233,7 +220,7 @@ class LegalScrollBoxCSSDisplayTestCase extends LegalTestCase {
     $this->drupalGet('user/register');
 
      // Check presence of T&C text.
-    $this->assertText($this->conditions, 'T&C text displayed');
+    $this->assertText($this->edit['conditions[value]'], 'T&C text displayed');
   }
 }
 
@@ -241,7 +228,6 @@ class LegalScrollBoxCSSDisplayTestCase extends LegalTestCase {
  * Test HTML Text display.
  */
 class LegalHTMLTextDisplayTestCase extends LegalTestCase {
-  var $conditions;
 
   public static function getInfo() {
     return array(
@@ -255,12 +241,8 @@ class LegalHTMLTextDisplayTestCase extends LegalTestCase {
     parent::setUp();
 
     // Set basic module settings.
-    $this->conditions = $this->randomName();
-    $edit = array(
-      'conditions' => $this->conditions,
-      'display' => 2,
-    );
-    $this->setSettings($edit);
+    $this->edit['display'] = 2;
+    $this->setSettings($this->edit);
   }
 
   /**
@@ -270,7 +252,7 @@ class LegalHTMLTextDisplayTestCase extends LegalTestCase {
     $this->drupalGet('user/register');
 
      // Check presence of T&C text.
-    $this->assertText($this->conditions, 'T&C text displayed');
+    $this->assertText($this->edit['conditions[value]'], 'T&C text displayed');
   }
 }
 
@@ -278,7 +260,6 @@ class LegalHTMLTextDisplayTestCase extends LegalTestCase {
  * Test "Page Link" display.
  */
 class LegalLinkDisplayTestCase extends LegalTestCase {
-  var $conditions;
 
   public static function getInfo() {
     return array(
@@ -292,12 +273,8 @@ class LegalLinkDisplayTestCase extends LegalTestCase {
     parent::setUp();
 
     // Set basic module settings.
-    $this->conditions = $this->randomName();
-    $edit = array(
-      'conditions' => $this->conditions,
-      'display' => 3,
-    );
-    $this->setSettings($edit);
+    $this->edit['display'] = 3;
+    $this->setSettings($this->edit);
   }
 
   /**

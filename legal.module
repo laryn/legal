@@ -154,7 +154,7 @@ function legal_display_fields($conditions) {
     case 1: // Scroll box (CSS).
     case 2: // HTML.
       $form['legal']['conditions'] = array(
-        '#markup' => filter_xss_admin($conditions['conditions']),
+        '#markup' => check_markup($conditions['conditions'], $conditions['format']),
       );
       break;
 
@@ -835,7 +835,7 @@ function legal_legal_accepted($data) {
 }
 
 function legal_get_conditions($language = NULL) {
-  $keys = array('tc_id', 'version', 'revision', 'language', 'conditions', 'date', 'extras', 'changes');
+  $keys = array('tc_id', 'version', 'revision', 'language', 'conditions', 'date', 'extras', 'changes', 'format');
 
   if (!empty($language)) {
     $result = db_select('legal_conditions', 'lc')
@@ -862,6 +862,7 @@ function legal_get_conditions($language = NULL) {
   }
 
   $conditions['extras'] = empty($conditions['extras']) ? array() : unserialize($conditions['extras']);
+  $conditions['format'] = empty($conditions['format']) ? filter_default_format() : $conditions['format'];
 
   return $conditions;
 }

@@ -93,11 +93,13 @@ function legal_administration($form_state) {
   $form = array_merge($form, legal_display_fields($conditions));
 
   $form['conditions'] = array(
-    '#type'          => 'textarea',
+    '#type'          => 'text_format',
     '#title'         => t('Terms & Conditions'),
     '#default_value' => $conditions['conditions'],
     '#description'   => t('Your Terms & Conditions'),
+    '#format'        => empty($conditions['format']) ? NULL : $conditions['format'],
     '#required'      => TRUE,
+    '#rows'          => 20,
   );
 
   // Set this here or array will flatten out and override real values.
@@ -111,7 +113,7 @@ function legal_administration($form_state) {
     '#type'          => 'radios',
     '#title'         => t('Display Style'),
     '#default_value' => variable_get('legal_display', '0'),
-    '#options'       => array(t('Scroll Box'), t('Scroll Box (CSS)'), t('HTML Text'), t('Page Link')),
+    '#options'       => array(t('Scroll Box (use with Text Format: Plain Text)'), t('Scroll Box (CSS - can include HTML)'), t('HTML Text'), t('Page Link')),
     '#description'   => t('How terms & conditions should be displayed to users.'),
     '#required'      => TRUE,
   );
@@ -214,12 +216,11 @@ function legal_administration($form_state) {
  *  After build function for legal_administration form.
  */
 function legal_preview($form, $form_values) {
-
   switch ($form['display']['#value']) {
     case 1: // Scroll box (CSS).
     case 2: // HTML.
       $form['legal']['conditions']             = array(
-        '#markup' => filter_xss_admin($form['conditions']['#value']),
+        '#markup' => check_markup($form_values['values']['conditions']['value'], $form_values['values']['conditions']['format']),
       );
       $form['legal']['legal_accept']['#title'] = t('<strong>Accept</strong> Terms & Conditions of Use');
       break;
@@ -235,7 +236,7 @@ function legal_preview($form, $form_values) {
         '#name'       => 'preview',
         '#type'       => 'textarea',
         '#title'      => t('Terms & Conditions'),
-        '#value'      => $form['conditions']['#value'],
+        '#value'      => check_markup($form_values['values']['conditions']['value'], $form_values['values']['conditions']['format']),
         '#parents'    => array('legal'),
         '#rows'       => 10,
         '#attributes' => array('readonly' => 'readonly'),
@@ -322,10 +323,11 @@ function legal_administration_submit($form, &$form_state) {
       'version'    => $version['version'],
       'revision'   => $version['revision'],
       'language'   => $values['language'],
-      'conditions' => $values['conditions'],
+      'conditions' => $values['conditions']['value'],
       'date'       => time(),
       'extras'     => serialize($values['extras']),
       'changes'    => $values['changes'],
+      'format'     => $values['conditions']['format'],
     ))
       ->execute();
 
