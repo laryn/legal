@@ -15,10 +15,16 @@ function legal_configuration($form_state) {
     '#markup' => '<p>' . t('Configuration options for display of Terms & Conditions.') . '</p>',
   );
 
-  $form['accept_every_login'] = array(
+  $form['user_profile_display'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show T&Cs on user profile edit pages'),
+    '#default_value' => variable_get('legal_user_profile_display', 1),
+  );
+
+  $form['legal_accept_every_login'] = array(
     '#type'          => 'checkbox',
     '#title'         => t('Ask to accept T&Cs on every login'),
-    '#default_value' => variable_get('accept_every_login', '0'),
+    '#default_value' => variable_get('legal_accept_every_login', '0'),
   );
 
   $form['except_legal'] = array(
@@ -53,7 +59,8 @@ function legal_configuration($form_state) {
 function legal_configuration_submit($form, &$form_state) {
   $values = $form_state['values'];
 
-  variable_set('accept_every_login', $values['accept_every_login']);
+  variable_set('legal_user_profile_display', $values['user_profile_display']);
+  variable_set('legal_accept_every_login', $values['legal_accept_every_login']);
 
   // Set the excepted user roles.
   if (!empty($values['except_roles'])) {

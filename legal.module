@@ -292,6 +292,10 @@ function legal_form_user_profile_form_alter(&$form, $form_state) {
   $accepted = FALSE;
   $account = $form['#user'];
 
+  if (variable_get('legal_user_profile_display', 1) == 0) {
+    return;
+  }
+
   // If this profile belongs to user 1 or if it has an exempt user role we don't
   // display Terms & Conditions. Pass the user of the profile being viewed, not
   // the current user.
@@ -414,7 +418,7 @@ function legal_user_login(&$edit, $account) {
     return;
   }
 
-  $accept_every_login = variable_get('accept_every_login', '0');
+  $legal_accept_every_login = variable_get('legal_accept_every_login', '0');
 
   // Get last accepted version for this account
   $legal_account = legal_get_accept($user->uid);
@@ -440,11 +444,11 @@ function legal_user_login(&$edit, $account) {
 
     if ($accepted) {
 
-      if ($accept_every_login == 0) {
+      if ($legal_accept_every_login == 0) {
         return;
       }
 
-      if ($accept_every_login == 1 && isset($_SESSION['legal']['legal_login']) && $_SESSION['legal']['legal_login'] == 1) {
+      if ($legal_accept_every_login == 1 && isset($_SESSION['legal']['legal_login']) && $_SESSION['legal']['legal_login'] == 1) {
         return;
       }
     }
@@ -614,7 +618,7 @@ function legal_login($form, $constructor) {
     drupal_goto();
   }
 
-  $accept_every_login = variable_get('accept_every_login', '0');
+  $legal_accept_every_login = variable_get('legal_accept_every_login', '0');
 
   // get last accepted version for this account
   $legal_account = legal_get_accept($uid);
@@ -636,11 +640,11 @@ function legal_login($form, $constructor) {
 
     if ($accepted) {
 
-      if ($accept_every_login == 0) {
+      if ($legal_accept_every_login == 0) {
         return;
       }
 
-      if ($accept_every_login == 1 && isset($_SESSION['legal']['legal_login']) && $_SESSION['legal']['legal_login'] == 1) {
+      if ($legal_accept_every_login == 1 && isset($_SESSION['legal']['legal_login']) && $_SESSION['legal']['legal_login'] == 1) {
         return;
       }
     }
@@ -746,7 +750,7 @@ function legal_login_submit($form, &$form_state) {
     ->condition('uid', $user->uid)
     ->execute();
 
-  if (variable_get('accept_every_login', '0') == '1') {
+  if (variable_get('legal_accept_every_login', '0') == '1') {
     $_SESSION['legal']['legal_login'] = 1;
   }
 
