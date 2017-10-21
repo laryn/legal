@@ -411,6 +411,7 @@ function legal_version($version_handling, $language) {
     ->fields('lc', array('version'))
     ->orderBy('version', 'desc')
     ->range(0, 1)
+    ->addTag('legal_version')
     ->execute()
     ->fetchField();
 
@@ -428,6 +429,7 @@ function legal_version($version_handling, $language) {
       ->condition('version', $version)
       ->condition('language', $language)
       ->orderBy('revision', 'DESC')
+      ->addTag('legal_revision_by_version')
       ->execute()
       ->fetchField();
 
@@ -488,6 +490,7 @@ function legal_versions_latest_get($language = NULL) {
         ->condition('language', $language_id)
         ->orderBy('revision', 'DESC')
         ->range(0, 1)
+        ->addTag('legal_conditions_by_language_and_version')
         ->execute()
         ->fetchAllAssoc('tc_id');
       $row    = count($result) ? (object)array_shift($result) : FALSE;
@@ -503,6 +506,7 @@ function legal_versions_latest_get($language = NULL) {
       ->groupBy('language')
       ->orderBy('version', 'DESC')
       ->range(0, 1)
+      ->addTag('legal_latest_condition_for_language')
       ->execute()
       ->fetchAllAssoc('tc_id');
     $row    = count($result) ? (object)array_shift($result) : FALSE;

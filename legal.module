@@ -814,6 +814,7 @@ function legal_get_accept($uid) {
     ->condition('uid', $uid)
     ->orderBy('version', 'DESC')
     ->orderBy('revision', 'DESC')
+    ->addTag('legal_get_accepted')
     ->execute()
     ->fetchAllAssoc('legal_id');
   $result = count($result) ? array_shift($result) : array();
@@ -866,6 +867,7 @@ function legal_get_conditions($language = NULL) {
       ->orderBy('version', 'DESC')
       ->orderBy('revision', 'DESC')
       ->range(0, 1)
+      ->addTag('legal_conditions_by_language')
       ->execute()
       ->fetchAllAssoc('tc_id');
     $result = (array)array_shift($result);
@@ -874,6 +876,7 @@ function legal_get_conditions($language = NULL) {
     $result = db_select('legal_conditions', 'lc')
       ->fields('lc')
       ->orderBy('tc_id', 'DESC')
+      ->addTag('legal_all_conditions')
       ->execute()
       ->fetchAllAssoc('tc_id');
     $result = (array)array_shift($result);
