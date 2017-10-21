@@ -100,6 +100,7 @@ function legal_administration($form_state) {
     '#format'        => empty($conditions['format']) ? NULL : $conditions['format'],
     '#required'      => TRUE,
     '#rows'          => 20,
+    '#weight'        => -1,
   );
 
   // Set this here or array will flatten out and override real values.
@@ -144,6 +145,7 @@ function legal_administration($form_state) {
   $form['display_header']  = array(
     '#type'   => 'fieldset',
     '#title'  => t('Display settings'),
+    '#description'   => t('How terms & conditions should be displayed to users.'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
@@ -153,33 +155,32 @@ function legal_administration($form_state) {
     '#title'         => t('Display Style'),
     '#default_value' => variable_get('legal_display', '0'),
     '#options'       => array(t('Scroll Box (use with Text Format: Plain Text)'), t('Scroll Box (CSS - can include HTML)'), t('HTML Text'), t('Link')),
-    '#description'   => t('How terms & conditions should be displayed to users.'),
     '#required'      => TRUE,
   );
 
-  if (variable_get('legal_display', '0') == 3) {
-    $form['display_header']['target_link'] = array(
-      '#type'          => 'checkbox',
-      '#title'         => t('Open page link in new window.'),
-      '#default_value' => (bool)variable_get('legal_target_link', FALSE),
-    );
+  $link_target_options = array('new_window' => t('New window'));
+  $link_target_value = variable_get('legal_link_target', 'new_window');
 
-    $form['display_header']['lightbox2'] = array(
-      '#type'          => 'checkbox',
-      '#title'         => t('Lightbox2 popup for page links'),
-      '#default_value' => (bool)variable_get('legal_lightbox2', FALSE),
-      '#description'   => t('This feature required Lightbox2 module enables.'),
-    );
-
-//    $form['display_header']['link_target'] = array(
-//      '#type'          => 'radios',
-//      '#title'         => t('Link target'),
-//      '#default_value' => variable_get('legal_display', '0'),
-//      '#options'       => array(t('Lightbox2 overlay'), t('New window')),
-//      '#description'   => t('How to display the T&Cs when a user clicks on the link.'),
-//      '#required'      => TRUE,
-//    );
+  if (module_exists('lightbox2')) {
+    $link_target_options['lightbox2'] = t('Lightbox2 overlay');
   }
+  elseif($link_target_value == 'lightbox2') {
+    $link_target_value = 'new_window';
+  }
+
+  $form['display_header']['link_target'] = array(
+    '#type'          => 'radios',
+    '#title'         => t('Link target'),
+    '#default_value' => $link_target_value,
+    '#options'       => $link_target_options,
+    '#description'   => t('How to display the T&Cs when a user clicks on the link.'),
+    '#required'      => TRUE,
+    '#states' => array(
+      'visible' => array(   // action to take.
+        ':input[name="display"]' => array('value' => 3),
+      ),
+    ),
+  );
 
   // Additional checkboxes.
   $form['extras'] = array(
@@ -345,18 +346,8 @@ function legal_administration_submit($form, &$form_state) {
     drupal_set_message(t('Display setting has been saved.'));
   }
 
-  if (isset($values['target_link'], $values['lightbox2']) ) {
-    if (variable_get('legal_target_link', FALSE) != $values['target_link']) {
-      variable_set('legal_target_link', $values['target_link']);
-    }
-
-    if(variable_get('legal_lightbox2', FALSE) != $values['lightbox2']){
-      if($values['lightbox2'] && !module_exists('lightbox2')){
-        form_set_error('display_header][lightbox2', t('Please enable Lightbox2 module. Check the <a href="https://www.drupal.org/project/lightbox2">Lightbox2</a> for more information.'));
-        return;
-      }
-      variable_set('legal_lightbox2', $values['lightbox2']);
-    }
+  if (isset($values['link_target']) ) {
+    variable_set('legal_link_target', $values['link_target']);
   }
 
   // If new conditions are different from current permisions, enter in database.

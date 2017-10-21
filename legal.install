@@ -60,8 +60,7 @@ function legal_uninstall() {
   variable_del('legal_display');
   variable_del('legal_user_profile_display');
   variable_del('legal_accept_every_login');
-  variable_del('legal_lightbox2');
-  variable_del('legal_target_link');
+  variable_del('legal_link_target');
 }
 
 /**

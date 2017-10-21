@@ -117,7 +117,6 @@ function legal_theme() {
     'legal_page'           => array('render element' => 'form'),
     'legal_login'          => array('render element' => 'form'),
     'legal_accept_label' => array('variables' => array('link' => FALSE)),
-    'legal_lightbox2'        => array('variables' => array('form' => FALSE)),
     'legal_target_link'        => array('variables' => array('form' => FALSE)),
   );
 }
@@ -149,13 +148,9 @@ function legal_display_fields($conditions) {
     '#type'  => 'value',
     '#value' => variable_get('legal_display', '0'),
   );
-  $form['display_header']['target_link'] = array(
+  $form['display_header']['link_target'] = array(
     '#type'  => 'value',
-    '#value' => (bool)variable_get('legal_target_link', FALSE),
-  );
-   $form['display_header']['lightbox2'] = array(
-    '#type'  => 'value',
-    '#value' => (bool)variable_get('legal_lightbox2', FALSE),
+    '#value' => variable_get('legal_link_target', 'new_window'),
   );
   $form['legal']          = array(
     '#type'   => 'fieldset',
@@ -175,9 +170,9 @@ function legal_display_fields($conditions) {
       $form['legal']['conditions'] = array(
         '#markup' => '',
       );
-      $lightbox2 = variable_get('legal_lightbox2', FALSE);
-      $target_link = variable_get('legal_target_link', FALSE);
-      $accept_label                = theme('legal_accept_label', array('link' => TRUE, 'lightbox2' => $lightbox2, 'target_link' => $target_link));
+
+      $target_link = variable_get('legal_link_target', 'new_window');
+      $accept_label = theme('legal_accept_label', array('link' => TRUE, 'target_link' => $target_link));
       break;
 
     default: // Scroll box (HTML).
@@ -255,16 +250,18 @@ function theme_legal_page($variables) {
 function theme_legal_accept_label($variables) {
 
   if ($variables['link']) {
-    if($variables['lightbox2']){
-      return t('<strong>Accept</strong> <a href="@terms #content" rel="lightmodal">Terms & Conditions</a> of Use', array('@terms' => url('legal')));
-    }
-    else{
-      if($variables['target_link']){
+
+    // Display a link to the T&Cs.
+    switch ($variables['target_link']) {
+      case 'new_window':
         return t('<strong>Accept</strong> <a href="@terms" target="_blank">Terms & Conditions</a> of Use', array('@terms' => url('legal')));
-      }
-      else{
-       return t('<strong>Accept</strong> <a href="@terms">Terms & Conditions</a> of Use', array('@terms' => url('legal')));
-      }
+        break;
+      case 'lightbox2':
+        return t('<strong>Accept</strong> <a href="@terms #content" rel="lightmodal">Terms & Conditions</a> of Use', array('@terms' => url('legal')));
+        break;
+      default:
+        return t('<strong>Accept</strong> <a href="@terms">Terms & Conditions</a> of Use', array('@terms' => url('legal')));
+        break;
     }
   }
   else {
