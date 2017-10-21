@@ -108,16 +108,6 @@ function legal_administration($form_state) {
   // Overide accept checbox requirement on preview.
   $form['legal']['legal_accept']['#required'] = FALSE;
 
-  // Overide display setting.
-  $form['display'] = array(
-    '#type'          => 'radios',
-    '#title'         => t('Display Style'),
-    '#default_value' => variable_get('legal_display', '0'),
-    '#options'       => array(t('Scroll Box (use with Text Format: Plain Text)'), t('Scroll Box (CSS - can include HTML)'), t('HTML Text'), t('Page Link')),
-    '#description'   => t('How terms & conditions should be displayed to users.'),
-    '#required'      => TRUE,
-  );
-
   // Only display options if there's more than one language available.
   if (count($languages) > 1) {
     // Language and version handling options.
@@ -148,6 +138,47 @@ function legal_administration($form_state) {
     $form['language']['language']         = array('#type' => 'value', '#value' => $language);
     $form['language']['version_handling'] = array('#type' => 'value', '#value' => $version_handling);
 
+  }
+
+  // Overide display setting.
+  $form['display_header']  = array(
+    '#type'   => 'fieldset',
+    '#title'  => t('Display settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $form['display_header']['display'] = array(
+    '#type'          => 'radios',
+    '#title'         => t('Display Style'),
+    '#default_value' => variable_get('legal_display', '0'),
+    '#options'       => array(t('Scroll Box (use with Text Format: Plain Text)'), t('Scroll Box (CSS - can include HTML)'), t('HTML Text'), t('Link')),
+    '#description'   => t('How terms & conditions should be displayed to users.'),
+    '#required'      => TRUE,
+  );
+
+  if (variable_get('legal_display', '0') == 3) {
+    $form['display_header']['target_link'] = array(
+      '#type'          => 'checkbox',
+      '#title'         => t('Open page link in new window.'),
+      '#default_value' => (bool)variable_get('legal_target_link', FALSE),
+    );
+
+    $form['display_header']['lightbox2'] = array(
+      '#type'          => 'checkbox',
+      '#title'         => t('Lightbox2 popup for page links'),
+      '#default_value' => (bool)variable_get('legal_lightbox2', FALSE),
+      '#description'   => t('This feature required Lightbox2 module enables.'),
+    );
+
+//    $form['display_header']['link_target'] = array(
+//      '#type'          => 'radios',
+//      '#title'         => t('Link target'),
+//      '#default_value' => variable_get('legal_display', '0'),
+//      '#options'       => array(t('Lightbox2 overlay'), t('New window')),
+//      '#description'   => t('How to display the T&Cs when a user clicks on the link.'),
+//      '#required'      => TRUE,
+//    );
   }
 
   // Additional checkboxes.
@@ -216,7 +247,7 @@ function legal_administration($form_state) {
  *  After build function for legal_administration form.
  */
 function legal_preview($form, $form_values) {
-  switch ($form['display']['#value']) {
+  switch ($form['display_header']['display']['#value']) {
     case 1: // Scroll box (CSS).
     case 2: // HTML.
       $form['legal']['conditions']             = array(
@@ -312,6 +343,20 @@ function legal_administration_submit($form, &$form_state) {
   if (variable_get('legal_display', '0') != $values['display']) {
     variable_set('legal_display', $values['display']);
     drupal_set_message(t('Display setting has been saved.'));
+  }
+
+  if (isset($values['target_link'], $values['lightbox2']) ) {
+    if (variable_get('legal_target_link', FALSE) != $values['target_link']) {
+      variable_set('legal_target_link', $values['target_link']);
+    }
+
+    if(variable_get('legal_lightbox2', FALSE) != $values['lightbox2']){
+      if($values['lightbox2'] && !module_exists('lightbox2')){
+        form_set_error('display_header][lightbox2', t('Please enable Lightbox2 module. Check the <a href="https://www.drupal.org/project/lightbox2">Lightbox2</a> for more information.'));
+        return;
+      }
+      variable_set('legal_lightbox2', $values['lightbox2']);
+    }
   }
 
   // If new conditions are different from current permisions, enter in database.
