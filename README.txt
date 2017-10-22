@@ -25,6 +25,8 @@ DESCRIPTION:
    Integrates with Views, and ships with 2 default views that display T&C history, and user
    acceptance of T&Cs.
 
+   Tokens can be used in T&C text.
+
 
  ********************************************************************
 INSTALLATION:

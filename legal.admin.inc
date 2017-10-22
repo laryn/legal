@@ -75,7 +75,7 @@ function legal_configuration_submit($form, &$form_state) {
 function legal_administration($form_state) {
   $form       = array();
 
-  $conditions = legal_get_conditions();
+  $conditions = legal_get_conditions(NULL, TRUE);
 
   if (module_exists('locale')) {
     $languages        = locale_language_list();
@@ -255,6 +255,9 @@ function legal_preview($form, $form_values) {
         '#markup' => check_markup($form_values['values']['conditions']['value'], $form_values['values']['conditions']['format']),
       );
       $form['legal']['legal_accept']['#title'] = t('<strong>Accept</strong> Terms & Conditions of Use');
+      if (module_exists('token')) {
+        $form['legal']['conditions']['#markup'] = token_replace($form['legal']['conditions']['#markup']);
+      }
       break;
     case 3: // Page Link.
       $form['legal']['conditions']             = array(
@@ -275,6 +278,9 @@ function legal_preview($form, $form_values) {
       );
 
       $form['legal']['legal_accept']['#title'] = t('<strong>Accept</strong> Terms & Conditions of Use');
+      if (module_exists('token')) {
+        $form['legal']['conditions']['#value'] = token_replace($form['legal']['conditions']['#value']);
+      }
   }
 
   // Overide additional checkboxes in preview.

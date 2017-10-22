@@ -857,7 +857,7 @@ function legal_legal_accepted($data) {
   }
 }
 
-function legal_get_conditions($language = NULL) {
+function legal_get_conditions($language = NULL, $raw = FALSE) {
   $keys = array('tc_id', 'version', 'revision', 'language', 'conditions', 'date', 'extras', 'changes', 'format');
 
   if (!empty($language)) {
@@ -888,6 +888,10 @@ function legal_get_conditions($language = NULL) {
 
   $conditions['extras'] = empty($conditions['extras']) ? array() : unserialize($conditions['extras']);
   $conditions['format'] = empty($conditions['format']) ? filter_default_format() : $conditions['format'];
+
+  if (module_exists('token') && $raw === FALSE) {
+    $conditions['conditions'] = token_replace($conditions['conditions']);
+  }
 
   return $conditions;
 }
