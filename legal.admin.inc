@@ -48,6 +48,8 @@ function legal_configuration($form_state) {
     '#description' => t('Do not display Terms and Conditions check box for the selected user roles.'),
   );
 
+  legal_display_form_element($form);
+
   $form['save'] = array(
     '#type'  => 'submit',
     '#value' => t('Save'),
@@ -66,6 +68,16 @@ function legal_configuration_submit($form, &$form_state) {
   if (!empty($values['except_roles'])) {
     $except_roles = array_filter($values['except_roles']);
     variable_set('legal_except_roles', $except_roles);
+  }
+
+  if (variable_get('legal_display', '0') != $values['display']) {
+    variable_set('legal_display', $values['display']);
+    drupal_set_message(t('Display setting has been saved.'));
+  }
+
+  if (isset($values['link_target']) && $values['link_target'] != variable_get('legal_link_target', '')) {
+    variable_set('legal_link_target', $values['link_target']);
+    drupal_set_message(t('Link target setting has been saved.'));
   }
 }
 
@@ -141,46 +153,7 @@ function legal_administration($form_state) {
 
   }
 
-  // Overide display setting.
-  $form['display_header']  = array(
-    '#type'   => 'fieldset',
-    '#title'  => t('Display settings'),
-    '#description'   => t('How terms & conditions should be displayed to users.'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-  );
-
-  $form['display_header']['display'] = array(
-    '#type'          => 'radios',
-    '#title'         => t('Display Style'),
-    '#default_value' => variable_get('legal_display', '0'),
-    '#options'       => array(t('Scroll Box (use with Text Format: Plain Text)'), t('Scroll Box (CSS - can include HTML)'), t('HTML Text'), t('Link')),
-    '#required'      => TRUE,
-  );
-
-  $link_target_options = array('new_window' => t('New window'));
-  $link_target_value = variable_get('legal_link_target', 'new_window');
-
-  if (module_exists('lightbox2')) {
-    $link_target_options['lightbox2'] = t('Lightbox2 overlay');
-  }
-  elseif($link_target_value == 'lightbox2') {
-    $link_target_value = 'new_window';
-  }
-
-  $form['display_header']['link_target'] = array(
-    '#type'          => 'radios',
-    '#title'         => t('Link target'),
-    '#default_value' => $link_target_value,
-    '#options'       => $link_target_options,
-    '#description'   => t('How to display the T&Cs when a user clicks on the link.'),
-    '#required'      => TRUE,
-    '#states' => array(
-      'visible' => array(   // action to take.
-        ':input[name="display"]' => array('value' => 3),
-      ),
-    ),
-  );
+  legal_display_form_element($form);
 
   // Additional checkboxes.
   $form['extras'] = array(
@@ -242,6 +215,54 @@ function legal_administration($form_state) {
   );
 
   return $form;
+}
+
+/**
+ * Display settings form element used on T&Cs content and configuration form pages.
+ *
+ * @param $form
+ */
+function legal_display_form_element(&$form) {
+  // Overide display setting.
+  $form['display_header']  = array(
+    '#type'   => 'fieldset',
+    '#title'  => t('Display settings'),
+    '#description'   => t('How terms & conditions should be displayed to users.'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $form['display_header']['display'] = array(
+    '#type'          => 'radios',
+    '#title'         => t('Display Style'),
+    '#default_value' => variable_get('legal_display', '0'),
+    '#options'       => array(t('Scroll Box (use with Text Format: Plain Text)'), t('Scroll Box (CSS - can include HTML)'), t('HTML Text'), t('Link')),
+    '#required'      => TRUE,
+  );
+
+  $link_target_options = array('new_window' => t('New window'));
+  $link_target_value = variable_get('legal_link_target', 'new_window');
+
+  if (module_exists('lightbox2')) {
+    $link_target_options['lightbox2'] = t('Lightbox2 overlay');
+  }
+  elseif($link_target_value == 'lightbox2') {
+    $link_target_value = 'new_window';
+  }
+
+  $form['display_header']['link_target'] = array(
+    '#type'          => 'radios',
+    '#title'         => t('Link target'),
+    '#default_value' => $link_target_value,
+    '#options'       => $link_target_options,
+    '#description'   => t('How to display the T&Cs when a user clicks on the link.'),
+    '#required'      => TRUE,
+    '#states' => array(
+      'visible' => array(   // action to take.
+        ':input[name="display"]' => array('value' => 3),
+      ),
+    ),
+  );
 }
 
 /**
@@ -354,6 +375,7 @@ function legal_administration_submit($form, &$form_state) {
 
   if (isset($values['link_target']) ) {
     variable_set('legal_link_target', $values['link_target']);
+    drupal_set_message(t('Link target setting has been saved.'));
   }
 
   // If new conditions are different from current permisions, enter in database.
