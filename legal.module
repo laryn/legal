@@ -329,13 +329,12 @@ function legal_form_user_profile_form_alter(&$form, $form_state) {
     return;
   }
 
-  // Set reminder to change password if coming from one time login link.
-  if (isset($_REQUEST['pass-reset-token'])) {
-
+  // Set reminder to change password if coming from one time login link and
+  // user hasn't changed his/her password yet.
+  if (isset($_SESSION['pass_reset_' . $user->uid]) && isset($_GET['pass-reset-token']) && ($_GET['pass-reset-token'] == $_SESSION['pass_reset_' . $user->uid])) {
     $messages = drupal_get_messages('status', FALSE);
     $status_messages = isset($messages['status']) ? $messages['status'] : array();
     $reminder = t('You have just used your one-time login link. It is no longer necessary to use this link to log in. Please change your password.');
-
     if (!in_array($reminder, $status_messages)) {
       drupal_set_message($reminder);
     }
