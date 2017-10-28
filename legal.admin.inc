@@ -509,7 +509,12 @@ function legal_versions_latest_get($language = NULL) {
 
   // get latest version for each language
   if (empty($language)) {
-    $languages = locale_language_list();
+
+    $languages = array('en' => t('English'));
+
+    if (module_exists('locale')) {
+      $languages = locale_language_list();
+    }
 
     foreach ($languages as $language_id => $language_name) {
       $result = db_select('legal_conditions', 'lc')
