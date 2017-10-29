@@ -1027,3 +1027,17 @@ function legal_user_is_exempt($account) {
 
   return FALSE;
 }
+
+/**
+ * Implements hook_anonymous_login_paths_alter().
+ *
+ * Used to make a no-config integration with the 'anonymous_login' module.
+ *
+ * @param array $paths
+ *   List of exclude/include directives for the anonymous_login module.
+ */
+function legal_anonymous_login_paths_alter(&$paths) {
+  $paths['exclude'][] = 'legal';
+  $paths['exclude'][] = 'legal_accept/*';
+}
+
