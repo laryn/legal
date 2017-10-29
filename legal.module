@@ -448,7 +448,7 @@ function legal_user_login(&$edit, $account) {
   $legal_account = legal_get_accept($user->uid);
 
   // If no version has been accepted yet, get version with current language revision.
-  if (empty($legal_account['version'])) {
+  if (!isset($legal_account['version'])) {
     $conditions = legal_get_conditions($language->language);
     // No conditions set yet.
     if (empty($conditions['conditions'])) {
