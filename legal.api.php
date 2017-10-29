@@ -33,7 +33,7 @@
  */
 function hook_legal_accepted($data) {
   if (module_exists('rules')) {
-    $user = user_load($data['uid']);
+    $user       = user_load($data['uid']);
     $conditions = legal_get_conditions($data['language']);
     rules_invoke_event('legal_accepted', $user, $conditions, $data['accepted']);
   }

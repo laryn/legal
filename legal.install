@@ -11,9 +11,26 @@
 function legal_schema() {
   $schema['legal_conditions'] = array(
     'fields'      => array(
-      'tc_id'      => array('type' => 'serial', 'unsigned' => FALSE, 'not null' => TRUE, 'disp-width' => 10),
-      'version'    => array('type' => 'int', 'unsigned' => FALSE, 'not null' => TRUE, 'default' => 0, 'disp-width' => 11),
-      'revision'   => array('type' => 'int', 'unsigned' => FALSE, 'not null' => TRUE, 'default' => 0, 'disp-width' => 11),
+      'tc_id'      => array(
+        'type'       => 'serial',
+        'unsigned'   => FALSE,
+        'not null'   => TRUE,
+        'disp-width' => 10
+      ),
+      'version'    => array(
+        'type'       => 'int',
+        'unsigned'   => FALSE,
+        'not null'   => TRUE,
+        'default'    => 0,
+        'disp-width' => 11
+      ),
+      'revision'   => array(
+        'type'       => 'int',
+        'unsigned'   => FALSE,
+        'not null'   => TRUE,
+        'default'    => 0,
+        'disp-width' => 11
+      ),
       'language'   => array(
         'description' => t("TODO."),
         'type'        => 'varchar',
@@ -21,20 +38,51 @@ function legal_schema() {
         'not null'    => TRUE,
         'default'     => ''
       ),
-      'conditions' => array('type' => 'text', 'size' => 'big', 'not null' => TRUE),
-      'date'       => array('type' => 'int', 'unsigned' => FALSE, 'not null' => TRUE, 'default' => 0, 'disp-width' => 11),
+      'conditions' => array(
+        'type'     => 'text',
+        'size'     => 'big',
+        'not null' => TRUE
+      ),
+      'date'       => array(
+        'type'       => 'int',
+        'unsigned'   => FALSE,
+        'not null'   => TRUE,
+        'default'    => 0,
+        'disp-width' => 11
+      ),
       'extras'     => array('type' => 'text'),
       'changes'    => array('type' => 'text'),
-      'format'     => array('type' => 'varchar', 'not null' => FALSE, 'length' => 255),
+      'format'     => array(
+        'type'     => 'varchar',
+        'not null' => FALSE,
+        'length'   => 255
+      ),
     ),
     'primary key' => array('tc_id'),
   );
 
   $schema['legal_accepted'] = array(
     'fields'      => array(
-      'legal_id' => array('type' => 'serial', 'unsigned' => FALSE, 'not null' => TRUE, 'disp-width' => 10),
-      'version'  => array('type' => 'int', 'unsigned' => FALSE, 'not null' => TRUE, 'default' => 0, 'disp-width' => 11),
-      'revision' => array('type' => 'int', 'unsigned' => FALSE, 'not null' => TRUE, 'default' => 0, 'disp-width' => 11),
+      'legal_id' => array(
+        'type'       => 'serial',
+        'unsigned'   => FALSE,
+        'not null'   => TRUE,
+        'disp-width' => 10
+      ),
+      'version'  => array(
+        'type'       => 'int',
+        'unsigned'   => FALSE,
+        'not null'   => TRUE,
+        'default'    => 0,
+        'disp-width' => 11
+      ),
+      'revision' => array(
+        'type'       => 'int',
+        'unsigned'   => FALSE,
+        'not null'   => TRUE,
+        'default'    => 0,
+        'disp-width' => 11
+      ),
       'language' => array(
         'description' => t("TODO."),
         'type'        => 'varchar',
@@ -42,9 +90,27 @@ function legal_schema() {
         'not null'    => TRUE,
         'default'     => ''
       ),
-      'uid'      => array('type' => 'int', 'unsigned' => FALSE, 'not null' => TRUE, 'default' => 0, 'disp-width' => 10),
-      'accepted' => array('type' => 'int', 'unsigned' => FALSE, 'not null' => TRUE, 'default' => 0, 'disp-width' => 11),
-      'tc_id'      => array('type' => 'int', 'unsigned' => FALSE, 'not null' => TRUE, 'default' => 0, 'disp-width' => 10),
+      'uid'      => array(
+        'type'       => 'int',
+        'unsigned'   => FALSE,
+        'not null'   => TRUE,
+        'default'    => 0,
+        'disp-width' => 10
+      ),
+      'accepted' => array(
+        'type'       => 'int',
+        'unsigned'   => FALSE,
+        'not null'   => TRUE,
+        'default'    => 0,
+        'disp-width' => 11
+      ),
+      'tc_id'    => array(
+        'type'       => 'int',
+        'unsigned'   => FALSE,
+        'not null'   => TRUE,
+        'default'    => 0,
+        'disp-width' => 10
+      ),
     ),
     'indexes'     => array('uid' => array('uid')),
     'primary key' => array('legal_id'),
@@ -82,7 +148,13 @@ function legal_update_7100() {
  */
 function legal_update_7101() {
   $table = 'legal_accepted';
-  $spec = array('type' => 'int', 'unsigned' => FALSE, 'not null' => TRUE, 'default' => 0, 'disp-width' => 10);
+  $spec  = array(
+    'type'       => 'int',
+    'unsigned'   => FALSE,
+    'not null'   => TRUE,
+    'default'    => 0,
+    'disp-width' => 10
+  );
   db_add_field($table, 'tc_id', $spec);
 }
 
@@ -91,7 +163,11 @@ function legal_update_7101() {
  */
 function legal_update_7102() {
   if (!db_field_exists('legal_conditions', 'format')) {
-    db_add_field('legal_conditions', 'format', array('type' => 'varchar', 'not null' => FALSE, 'length' => 255));
+    db_add_field('legal_conditions', 'format', array(
+      'type'     => 'varchar',
+      'not null' => FALSE,
+      'length'   => 255
+    ));
   }
 }
 
