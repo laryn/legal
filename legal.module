@@ -331,10 +331,13 @@ function legal_form_user_profile_form_alter(&$form, $form_state) {
 
   // Set reminder to change password if coming from one time login link and
   // user hasn't changed his/her password yet.
-  if (isset($_REQUEST['pass-reset-token']) && strpos($_SERVER["HTTP_REFERER"], '/legal_accept?') !== FALSE) {
+  if (isset($_REQUEST['pass-reset-token']) && isset($_COOKIE['Drupal_visitor_legal_pass_reset'])) {
+    user_cookie_delete('legal_pass_reset');
+
     $messages = drupal_get_messages('status', FALSE);
     $status_messages = isset($messages['status']) ? $messages['status'] : array();
     $reminder = t('You have just used your one-time login link. It is no longer necessary to use this link to log in. Please change your password.');
+
     if (!in_array($reminder, $status_messages)) {
       drupal_set_message($reminder);
     }
@@ -494,6 +497,7 @@ function legal_user_login(&$edit, $account) {
     // This is a new, anonymous-user session.
     $_SESSION['pass_reset_' . $uid] = $token;
     $query = array('destination' => "user/$uid/edit?pass-reset-token=$token");
+    user_cookie_save(array('legal_pass_reset' => TRUE));
   }
 
   if (!empty($_REQUEST['destination'])) {
