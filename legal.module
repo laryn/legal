@@ -1077,3 +1077,53 @@ function legal_anonymous_login_paths_alter(&$paths) {
   $paths['exclude'][] = 'legal_accept/*';
 }
 
+/**
+ * Implements hook_token_info().
+ */
+function legal_token_info() {
+  $type = array(
+    'name' => t('Legal'),
+    'description' => t('Tokens from the Legal: Terms & Conditions module.'),
+  );
+
+  $legal['tc'] = array(
+    'name' => t("Terms & Conditions"),
+    'description' => t("The latest terms and conditions."),
+  );
+
+  return array(
+    'types' => array(
+      'legal' => $type,
+    ),
+    'tokens' => array(
+      'legal' => $legal,
+    ),
+  );
+}
+
+
+/**
+ * Implements hook_tokens().
+ */
+function legal_tokens($type, $tokens, array $data = array(), array $options = array()) {
+  if (isset($options['language'])) {
+    $url_options['language'] = $options['language'];
+    $language_code = $options['language']->language;
+  }
+  else {
+    $language_code = NULL;
+  }
+
+  $replacements = array();
+  if ($type == 'legal') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'tc':
+          $conditions = legal_get_conditions($language_code);
+          $replacements[$original] = check_markup($conditions['conditions'], $conditions['format']);
+          break;
+      }
+    }
+  }
+  return $replacements;
+}
